@@ -1,0 +1,418 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuardIA - Analizador de Respuestas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Paleta de azules modernos */
+        :root {
+            --blue: #1a75ff; /* Azul claro, similar al tono de tu logo */
+            --navy: white; /* Azul marino, profundo y elegante */
+            --light-blue: white; /* Azul muy suave, casi blanco */
+            --dark-navy: #001f4f; /* Azul oscuro para contrastar */
+            --gray: #f1f1f1; /* Blanco suave, para un toque limpio */
+        }
+
+        .resultados-container {
+            max-height: 760px; /* Limita la altura máxima */
+            overflow-y: auto; /* Muestra una barra de desplazamiento si el contenido excede */
+        }
+
+        /* Reset y estilos básicos */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            background: var(--navy);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar-logo {
+            height: 65px; /* Ajusta la altura según el tamaño del navbar */
+            width: auto; /* Mantiene la proporción de la imagen */
+        }
+
+        /* Navbar fijo */
+        header {
+            background: var(--blue);
+            padding: 0.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 10;
+        }
+
+            header img {
+                /*width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                border: 2px solid var(--light-blue);*/
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+            }
+
+
+        /* Contenedor principal */
+        .container {
+            margin-top: 80px; /* Altura del header */
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            overflow: hidden;
+        }
+
+        /* Sección de Resultados (Izquierda) */
+        .resultados-container {
+            background: var(--dark-navy);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .resultados-header h2 {
+            font-size: 1.6rem;
+            color: var(--light-blue);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        /* Porcentaje principal como main event */
+        #coincidenciaTotal {
+            font-size: 12rem;
+            color: var(--light-blue);
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            width: 100%;
+        }
+
+            #coincidenciaTotal::after {
+               
+            }
+
+        .metricas {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            justify-content: space-between;
+            margin-top: -2.5rem; /* Aumenta el margen superior */
+        }
+
+        .metrica {
+            flex: 1;
+            background: rgba(127, 219, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px solid rgba(127, 219, 255, 0.2);
+            text-align: center;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+            .metrica:hover {
+                transform: translateY(-3px);
+                border-color: var(--blue);
+            }
+
+            .metrica img {
+                width: 50px;
+                height: 50px;
+                margin-bottom: 0.5rem;
+            }
+
+            .metrica h3 {
+                font-size: 1rem;
+                color: var(--blue);
+                margin-bottom: 0.3rem;
+            }
+
+            .metrica .porcentaje {
+                font-size: 4.5rem;
+                font-weight: 700;
+                color: var(--blue);
+                margin-top: 0.5rem;
+            }
+
+        /* Sección de Entradas (Derecha) */
+        .entradas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow-y: auto;
+            padding-bottom: 1rem;
+        }
+
+        .ia-color {
+            color: #f1c40f; /* El color que desees para "IA" */
+        }
+
+        .input-section {
+            background: var(--dark-navy);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 2px solid rgba(127, 219, 255, 0.2);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .input-section:hover {
+                transform: translateY(0.5px);
+                border-color: var(--blue);
+            }
+
+            .input-section h2 {
+                color: var(--blue);
+                margin-bottom: 1rem;
+                font-size: 1rem;
+            }
+
+        textarea {
+            flex: 1;
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--gray);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+
+            textarea:focus {
+                outline: none;
+                border-color: var(--blue);
+                background: rgba(127, 219, 255, 0.05);
+            }
+        /* Botón de análisis */
+        .btn-container {
+            text-align: center;
+            margin-top: auto;
+        }
+
+        button {
+            background: var(--blue);
+            color: var(--navy);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 80%;
+            max-width: 300px;
+        }
+
+            button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(127, 219, 255, 0.4);
+            }
+
+        .warning-box {
+            background-color: #fff8e1; /* Amarillo claro tirando a blanco */
+            border: 1px solid #fbc02d; /* Borde amarillo más oscuro */
+            border-radius: 8px; /* Bordes redondeados */
+            padding: 15px;
+            margin-top: 20px; /* Espacio entre el contenedor de resultados y el cuadro de advertencia */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .warning-icon {
+            width: 30px; /* Ajusta el tamaño del icono según sea necesario */
+            height: 30px;
+            margin-left: 15px; /* Espacio entre el texto y el icono */
+        }
+
+        .warning-text {
+            font-size: 14px;
+            color: #333; /* Color oscuro para el texto */
+            line-height: 1.5;
+        }
+
+            .warning-text strong {
+                font-weight: bold;
+            }
+
+        /* Responsive: se apilan las secciones en pantallas pequeñas */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            #coincidenciaTotal {
+                font-size: 4rem;
+            }
+
+            .metricas {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar estilo navbag -->
+    <header>
+        <img src="images/GuardiaBlanco.png" alt="Logo" class="navbar-logo">
+        <img src="images/Guardia_simplificada_cropped.png" alt="Logo" class="navbar-logo" />
+    </header>
+
+    <div class="container">
+        <!-- Sección de Resultados (Izquierda) -->
+        <div class="resultados-container">
+            <div class="resultados-header">
+                <h2>Análisis de Respuesta</h2>
+                <div id="coincidenciaTotal">--%</div>
+            </div>
+            <!-- Cartas horizontales de métricas -->
+            <div class="metricas">
+                <div class="metrica">
+                    <img src="https://cdn-icons-png.flaticon.com/512/9660/9660607.png" alt="Icono Claridad y Coherencia">
+                    <h3>Claridad y Coherencia</h3>
+                    <div class="porcentaje" id="claridadCoherencia">--%</div>
+                </div>
+                <div class="metrica">
+                    <img src="https://cdn-icons-png.flaticon.com/512/9299/9299881.png" alt="Icono Relevancia Contextual">
+                    <h3>Relevancia Contextual</h3>
+                    <div class="porcentaje" id="relevanciaContextual">--%</div>
+                </div>
+                <div class="metrica">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1692/1692908.png" alt="Icono Precisión de Respuesta">
+                    <h3>Precisión de Respuesta</h3>
+                    <div class="porcentaje" id="precisionRespuesta">--%</div>
+                </div>
+            </div>
+            <div class="warning-box">
+                <p class="warning-text">
+                    <strong>Precaución:</strong> Nuestro detector de IA es muy avanzado, pero ningún detector es completamente infalible, independientemente de lo que indiquen las puntuaciones de precisión. No utilices un detector de IA para tomar decisiones que puedan afectar a la carrera profesional o la situación académica de una persona.
+                </p>
+                <img src="https://assets.quillbot.com/images/aiDetector/Caution.svg" alt="Caution" class="warning-icon">
+            </div>
+        </div>
+        
+
+
+        <!-- Sección de Entradas (Derecha) -->
+        <div class="entradas-container">
+            <div class="input-section">
+                <h2>Ingresa el Prompt</h2>
+                <textarea id="prompt" placeholder="Escribe el prompt proporcionado a la IA..."></textarea>
+            </div>
+            <div class="input-section">
+                <h2>Respuesta de la IA</h2>
+                <textarea id="respuesta" placeholder="Pega aquí la respuesta generada por la IA..."></textarea>
+            </div>
+            <div class="btn-container">
+                <button id="verificarBtn" onclick="verificarRespuesta()">Analizar Respuesta</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stopwords = ['el', 'la', 'los', 'las', 'de', 'a', 'en', 'y', 'o', 'que', 'es', 'un', 'una', 'por', 'para'];
+
+        function verificarRespuesta() {
+            const prompt = document.getElementById('prompt').value;
+            const respuesta = document.getElementById('respuesta').value;
+            const button = document.getElementById('verificarBtn');
+
+            if (!prompt || !respuesta) {
+                alert('Por favor, completa ambos campos antes de verificar.');
+                return;
+            }
+
+            // Deshabilitar botón temporalmente para animación
+            button.disabled = true;
+            button.innerText = 'Analizando...';
+
+            setTimeout(() => {
+                button.disabled = false;
+                button.innerText = 'Analizar Respuesta';
+
+                const claridadCoherenciaScore = calcularClaridadCoherencia(respuesta);
+                const relevanciaContextualScore = calcularRelevanciaContextual(prompt, respuesta);
+                const precisionScore = calcularPrecision(respuesta);
+                const sumaPorcentajes = claridadCoherenciaScore + relevanciaContextualScore + precisionScore;
+                const coincidenciaTotal = (sumaPorcentajes / 300) * 100;
+
+                document.getElementById('coincidenciaTotal').innerText = `${coincidenciaTotal.toFixed(1)}%`;
+                document.getElementById('claridadCoherencia').innerText = `${claridadCoherenciaScore.toFixed(1)}%`;
+                document.getElementById('relevanciaContextual').innerText = `${relevanciaContextualScore.toFixed(1)}%`;
+                document.getElementById('precisionRespuesta').innerText = `${precisionScore.toFixed(1)}%`;
+            }, 1000);
+        }
+
+        function calcularClaridadCoherencia(respuesta) {
+            const oraciones = respuesta.split('.').filter(oracion => oracion.trim().length > 0).length;
+            let puntuacion = Math.min(100, (oraciones / 3) * 100);
+            if (respuesta.toLowerCase().includes('en resumen') || respuesta.toLowerCase().includes('en conclusión')) {
+                puntuacion += 10;
+            }
+            return Math.min(100, puntuacion);
+        }
+
+        function calcularRelevanciaContextual(prompt, respuesta) {
+            const promptPalabras = filtrarStopwords(prompt.toLowerCase().split(' ')).filter(p => p.length > 3);
+            const respuestaPalabras = filtrarStopwords(respuesta.toLowerCase().split(' '));
+            let coincidencias = 0;
+            promptPalabras.forEach(palabra => {
+                if (respuestaPalabras.includes(palabra)) {
+                    coincidencias++;
+                }
+            });
+            return promptPalabras.length > 0 ? (coincidencias / promptPalabras.length) * 100 : 0;
+        }
+
+        function calcularPrecision(respuesta) {
+            const palabrasCerteza = ['seguro', 'cierto', 'definitivamente'];
+            const palabrasIncerteza = ['quizás', 'tal vez', 'posiblemente'];
+            let puntuacion = 50;
+            respuesta.toLowerCase().split(' ').forEach(palabra => {
+                if (palabrasCerteza.includes(palabra)) {
+                    puntuacion += 10;
+                } else if (palabrasIncerteza.includes(palabra)) {
+                    puntuacion -= 10;
+                }
+            });
+            if (/\d+/.test(respuesta)) {
+                puntuacion += 10;
+            }
+            return Math.min(100, Math.max(0, puntuacion));
+        }
+
+        function filtrarStopwords(palabras) {
+            return palabras.filter(palabra => !stopwords.includes(palabra) && palabra.length > 2);
+        }
+    </script>
+</body>
+</html>
